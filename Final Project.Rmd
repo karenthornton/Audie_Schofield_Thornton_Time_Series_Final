@@ -1,0 +1,69 @@
+---
+title: "Startups Funding"
+author: "Michael Audie"
+date: "2023-04-01"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(lubridate)
+library(ggplot2)
+library(forecast)
+library(tseries)
+library(smooth)
+```
+
+```{r}
+start_up_funding.raw<-read.csv("./Project/start_ups_funding.csv")
+
+full_funding.df<-start_up_funding.raw[start_up_funding.raw$unit=="USD",]
+
+early_stage.df<-full_funding.df[full_funding.df$funding.stage=="Early stage",]
+
+early_stage_sum.df<-aggregate(value~year, data = early_stage.df,sum)
+early_stage_sum.df$year<-as.Date(paste0(early_stage_sum.df$year,"-01-01"))
+
+late_stage.df<-full_funding.df[full_funding.df$funding.stage=="Later stage",]
+
+late_stage_sum.df<-aggregate(value~year, data = late_stage.df,sum)
+late_stage_sum.df$year<-as.Date(paste0(late_stage_sum.df$year,"-01-01"))
+
+
+```
+
+```{r}
+early.ts<-ts(early_stage_sum.df[,2], start = c(2000,1), frequency = 1)
+late.ts<-ts(late_stage_sum.df[,2], start = c(2000,1), frequency = 1)
+ggplot(early_stage_sum.df, aes(x=year))+
+  geom_line(aes(y=early.ts,colour="Early"))+
+  geom_line(aes(y=late.ts,colour="Later"))+
+  scale_colour_manual(name="Stage of Funding", values =c("Early"="red","Later"="blue") )+
+  theme_classic()+
+  xlab("Year")+
+  ylab("Startup Funding (USD)")
+
+par(mar=c(3,3,3,0));par(mfrow=c(1,2))
+Acf(early.ts)
+Pacf(early.ts)
+Acf(late.ts)
+Pacf(late.ts)
+```
+
+```{r}
+early_ARIMA<-auto.arima(early.ts)
+summary(early_ARIMA)
+early_forecast<-forecast(early_ARIMA, h=3)
+autoplot(early_forecast)
+
+
+ES_early<-es(early.ts, h=1, silent=FALSE, holdout=FALSE)
+
+
+```
+
+
