@@ -10,6 +10,7 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
 ```{r}
 library(lubridate)
 library(ggplot2)
@@ -18,21 +19,35 @@ library(tseries)
 library(smooth)
 ```
 
+#Data Wrangling - Full sets
 ```{r}
+#load the data
 start_up_funding.raw<-read.csv("./start_ups_funding.csv")
 
+#only USD for unit
 full_funding.df<-start_up_funding.raw[start_up_funding.raw$unit=="USD",]
 
+#creating a df for only the early stage
 early_stage.df<-full_funding.df[full_funding.df$funding.stage=="Early stage",]
 
+#aggregating the values into each year (early stages)
 early_stage_sum.df<-aggregate(value~year, data = early_stage.df,sum)
+#adding the first month of each year to the data (early stages)
 early_stage_sum.df$year<-as.Date(paste0(early_stage_sum.df$year,"-01-01"))
 
+#creating a df for only the late stage
 late_stage.df<-full_funding.df[full_funding.df$funding.stage=="Later stage",]
 
+#aggregating the values into each year (late stages)
 late_stage_sum.df<-aggregate(value~year, data = late_stage.df,sum)
+#adding the first month of each year to the data (late stages)
 late_stage_sum.df$year<-as.Date(paste0(late_stage_sum.df$year,"-01-01"))
 
+```
+
+
+#Data Wrangling - Training Sets
+```{r}
 
 ```
 
