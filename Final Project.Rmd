@@ -19,7 +19,7 @@ library(smooth)
 ```
 
 ```{r}
-start_up_funding.raw<-read.csv("../Audie_Schofield_Thornton_Time_Series_Final/start_ups_funding.csv")
+start_up_funding.raw<-read.csv("./start_ups_funding.csv")
 
 full_funding.df<-start_up_funding.raw[start_up_funding.raw$unit=="USD",]
 
