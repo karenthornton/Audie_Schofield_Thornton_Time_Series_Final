@@ -1,6 +1,6 @@
 ---
 title: "Startups Funding"
-author: "Michael Audie"
+author: "Michael Audie, Karen Thornton, Hannah Schofield"
 date: "2023-04-01"
 output: html_document
 editor_options: 
@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+#load packages
 library(lubridate)
 library(ggplot2)
 library(forecast)
@@ -46,7 +47,6 @@ late_stage_sum.df$year<-as.Date(paste0(late_stage_sum.df$year,"-01-01"))
 
 ```
 
-
 #Data Wrangling - Training Sets
 ```{r}
 #create an early stage df with the last year missing
@@ -58,11 +58,19 @@ late_stage_sum_training.df <- late_stage_sum.df %>%
   filter(between(year, as.Date("2000-01-01"), as.Date("2021-01-01")))
 ```
 
+#Creating Time Series
 ```{r}
 #create time series for full datasets
 early.ts<-ts(early_stage_sum.df[,2], start = c(2000,1), frequency = 1)
 late.ts<-ts(late_stage_sum.df[,2], start = c(2000,1), frequency = 1)
 
+#create time series for the training datasets
+early.training.ts<-ts(early_stage_sum_training.df[,2], start = c(2000,1), frequency = 1)
+late.training.ts<-ts(late_stage_sum_training.df[,2], start = c(2000,1), frequency = 1)
+```
+
+#Visualization
+```{r}
 #plot early and late full datasets
 ggplot(early_stage_sum.df, aes(x=year))+
   geom_line(aes(y=early.ts,colour="Early"))+
@@ -71,7 +79,9 @@ ggplot(early_stage_sum.df, aes(x=year))+
   theme_classic()+
   xlab("Year")+
   ylab("Startup Funding (USD)")
+```
 
+```{r}
 #create ACFs and PACFs for the full datasets
 par(mar=c(3,3,3,0));par(mfrow=c(1,2))
 Acf(early.ts)
