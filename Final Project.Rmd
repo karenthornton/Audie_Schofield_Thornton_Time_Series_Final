@@ -97,6 +97,7 @@ Pacf(late.ts,lag.max = 40,main="Late PACF",ylim=c(-1,1))
 
 
 #Change these to have the training datasets
+
 #early_ARIMA<-auto.arima(early.ts)
 #summary(early_ARIMA)
 #early_forecast<-forecast(early_ARIMA, h=3)
@@ -104,9 +105,25 @@ Pacf(late.ts,lag.max = 40,main="Late PACF",ylim=c(-1,1))
 
 
 #ES_early<-es(early.ts, h=1, silent=FALSE, holdout=FALSE)
+
+
+#Visualize Model
+
+
 ```
 
 #Model Fit - Arima (Late)
 ```{r}
 #Fit the late data to an ARIMA
+
+#Visualize Model
+
 ```
+
+#Model Fit - ??? (Early)
+
+#Model Fit - ??? (Late)
+
+#RMSE - Early
+
+#RMSE - Late
