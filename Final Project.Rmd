@@ -81,25 +81,32 @@ ggplot(early_stage_sum.df, aes(x=year))+
   ylab("Startup Funding (USD)")
 ```
 
+#Create ACFs and PACFs
 ```{r}
 #create ACFs and PACFs for the full datasets
 par(mar=c(3,3,3,0));par(mfrow=c(1,2))
-Acf(early.ts)
-Pacf(early.ts)
-Acf(late.ts)
-Pacf(late.ts)
+Acf(early.ts,lag.max = 40,main="Early ACF",ylim=c(-1,1))
+Pacf(early.ts,lag.max = 40,main="Early PACF",ylim=c(-1,1))
+Acf(late.ts,lag.max = 40,main="Late ACF",ylim=c(-1,1))
+Pacf(late.ts,lag.max = 40,main="Late PACF",ylim=c(-1,1))
 ```
 
+#Model Fit - Arima (Early)
 ```{r}
-early_ARIMA<-auto.arima(early.ts)
-summary(early_ARIMA)
-early_forecast<-forecast(early_ARIMA, h=3)
-autoplot(early_forecast)
+#Fit the early data to an ARIMA
 
 
-ES_early<-es(early.ts, h=1, silent=FALSE, holdout=FALSE)
+#Change these to have the training datasets
+#early_ARIMA<-auto.arima(early.ts)
+#summary(early_ARIMA)
+#early_forecast<-forecast(early_ARIMA, h=3)
+#autoplot(early_forecast)
 
 
+#ES_early<-es(early.ts, h=1, silent=FALSE, holdout=FALSE)
 ```
 
-
+#Model Fit - Arima (Late)
+```{r}
+#Fit the late data to an ARIMA
+```
