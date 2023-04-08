@@ -69,6 +69,12 @@ early.training.ts<-ts(early_stage_sum_training.df[,2], start = c(2000,1), freque
 late.training.ts<-ts(late_stage_sum_training.df[,2], start = c(2000,1), frequency = 1)
 ```
 
+#Data Wrangling - Testing Sets
+```{r}
+late.test.ts <- subset(late.ts, start = length(late.ts)-1)
+early.test.ts <- subset(early.ts, start = length(early.ts)-1)
+```
+
 #Visualization
 ```{r}
 #plot early and late full datasets
@@ -115,9 +121,15 @@ Pacf(late.ts,lag.max = 40,main="Late PACF",ylim=c(-1,1))
 #Model Fit - Arima (Late)
 ```{r}
 #Fit the late data to an ARIMA
+late.arima<-auto.arima(late.training.ts)
+summary(late.arima)
+
+late.arima.for<-forecast(late.arima, h=2)
 
 #Visualize Model
-
+autoplot(late.ts)+
+  autolayer(late.arima.for$mean)+
+  autolayer(late.test.ts)
 ```
 
 #Model Fit - ??? (Early)
