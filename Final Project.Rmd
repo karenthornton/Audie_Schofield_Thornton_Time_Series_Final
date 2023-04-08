@@ -121,21 +121,9 @@ autoplot(early.ts)+
 
 ARIMA_scores <- accuracy(early.arima.for$mean, early.test.ts)  #store the performance metrics
 
-#early_ARIMA<-auto.arima(early.ts)
-#summary(early_ARIMA)
-#early_forecast<-forecast(early_ARIMA, h=3)
-#autoplot(early_forecast)
-
-
-#ES_early<-es(early.ts, h=1, silent=FALSE, holdout=FALSE)
-
-
-#Visualize Model
-
-
 ```
 
-#Model Fit - ??? (Early)
+#Model Fit - Mean, Naive, SSES (Early)
 ```{r}
 #Model 2: Arithmetic Mean 
 early.meanSeas <- meanf(y = early.training.ts, h = 2)
@@ -150,7 +138,7 @@ early.SSES <- es(early.training.ts, model="ZZZ", h=2, holdout=FALSE)
 SSES_scores <- accuracy(early.SSES$forecast,early.test.ts)
 
 ```
-Early Fit (cont)
+#Model Fit - TBATS (Early)
 ```{r}
 #Model 5: TBATS
 early.TBATS <-  tbats(early.training.ts)
@@ -169,6 +157,7 @@ TBATS_scores <- accuracy(early.TBATS.for$mean,early.test.ts)
 
 ```
 
+#Model Fit - NN (Early)
 ```{r}
 #Model 6: Neural Network
 early.NN.fit <- nnetar(early.training.ts,p=1,P=1)
@@ -188,6 +177,7 @@ NN_scores <- accuracy(early.NN.for$mean,early.test.ts)
 
 ```
 
+#Model Plotting (Early)
 ```{r}
 #Early models plotting
 autoplot(early.ts) +
@@ -202,6 +192,7 @@ autoplot(early.ts) +
 
 ```
 
+#Model Scoring (Early)
 ```{r}
 #Early models comparison
 early.scores <- as.data.frame(
@@ -228,17 +219,10 @@ late.arima.for<-forecast(late.arima, h=2)
 #Visualize Model
 autoplot(late.ts)+
   autolayer(late.arima.for$mean)+
-<<<<<<< HEAD
   autolayer(late.test.ts)+
   ylab("Total Funding")
 
-=======
-  autolayer(late.ES.forecast$mean)
->>>>>>> 5d04cdf96293244a47d19a20f6b97975b0a136fc
 ```
-
-
-
 
 
 #Model Fit - ES (Late)
