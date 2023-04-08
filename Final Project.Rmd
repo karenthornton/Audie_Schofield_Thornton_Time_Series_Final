@@ -126,15 +126,24 @@ summary(late.arima)
 
 late.arima.for<-forecast(late.arima, h=2)
 
+
 #Visualize Model
 autoplot(late.ts)+
   autolayer(late.arima.for$mean)+
-  autolayer(late.test.ts)
+  autolayer(late.ES.forecast$mean)
 ```
 
 #Model Fit - ??? (Early)
 
-#Model Fit - ??? (Late)
+#Model Fit - ES (Late)
+```{r}
+late.ES<-es(late.training.ts,model = "ZZZ",h=1,houldout=FALSE)
+late.ES.forecast<-forecast(late.ES, h=2)
+
+plot(late.ES.forecast)
+autoplot(late.ts)+
+  autolayer(late.ES.forecast$mean)
+```
 
 #RMSE - Early
 
