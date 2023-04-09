@@ -124,7 +124,7 @@ Pacf(late.ts,lag.max = 40,main="Late PACF",ylim=c(-1,1))
 late.arima<-auto.arima(late.training.ts)
 summary(late.arima)
 
-late.arima.for<-forecast(late.arima, h=2)
+late.arima.for<-forecast(late.arima, h=3)
 
 
 #Visualize Model
@@ -138,7 +138,7 @@ autoplot(late.ts)+
 #Model Fit - ES (Late)
 ```{r}
 late.ES<-es(late.training.ts,model = "ZZZ",h=1,houldout=FALSE)
-late.ES.forecast<-forecast(late.ES, h=2)
+late.ES.forecast<-forecast(late.ES, h=3)
 
 plot(late.ES.forecast)
 autoplot(late.ts)+
