@@ -11,7 +11,7 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 #load packages
 library(lubridate)
 library(ggplot2)
@@ -23,7 +23,7 @@ library(kableExtra)
 ```
 
 #Data Wrangling - Full sets
-```{r}
+```{r echo=FALSE}
 #load the data
 start_up_funding.raw<-read.csv("./start_ups_funding.csv")
 
@@ -49,7 +49,7 @@ late_stage_sum.df$year<-as.Date(paste0(late_stage_sum.df$year,"-01-01"))
 ```
 
 #Data Wrangling - Training Sets
-```{r}
+```{r echo=FALSE}
 #create an early stage df with the last year missing
 early_stage_sum_training.df <- early_stage_sum.df %>%
   filter(between(year, as.Date("2000-01-01"), as.Date("2021-01-01")))
@@ -60,7 +60,7 @@ late_stage_sum_training.df <- late_stage_sum.df %>%
 ```
 
 #Creating Time Series
-```{r}
+```{r echo=FALSE}
 #create time series for full datasets
 early.ts<-ts(early_stage_sum.df[,2], start = c(2000,1), frequency = 1)
 late.ts<-ts(late_stage_sum.df[,2], start = c(2000,1), frequency = 1)
@@ -71,7 +71,7 @@ late.training.ts<-ts(late_stage_sum_training.df[,2], start = c(2000,1), frequenc
 ```
 
 #Data Wrangling - Testing Sets
-```{r}
+```{r echo=FALSE}
 late.test.ts <- subset(late.ts, start = length(late.ts)-1)
 early.test.ts <- subset(early.ts, start = length(early.ts)-1)
 
@@ -84,7 +84,7 @@ autoplot(late.test.ts)
 ```
 
 #Visualization
-```{r}
+```{r echo=FALSE}
 #plot early and late full datasets
 ggplot(early_stage_sum.df, aes(x=year))+
   geom_line(aes(y=early.ts,colour="Early"))+
@@ -96,7 +96,7 @@ ggplot(early_stage_sum.df, aes(x=year))+
 ```
 
 #Create ACFs and PACFs
-```{r}
+```{r echo=FALSE}
 #create ACFs and PACFs for the full datasets
 par(mar=c(3,3,3,0));par(mfrow=c(1,2))
 Acf(early.ts,lag.max = 40,main="Early ACF",ylim=c(-1,1))
@@ -106,7 +106,7 @@ Pacf(late.ts,lag.max = 40,main="Late PACF",ylim=c(-1,1))
 ```
 
 #Model Fit - Arima (Early)
-```{r}
+```{r echo=FALSE}
 #Fit the early data to an ARIMA
 #Model 1: ARIMA
 early.arima<-auto.arima(early.training.ts)
@@ -124,7 +124,7 @@ ARIMA_scores <- accuracy(early.arima.for$mean, early.test.ts)  #store the perfor
 ```
 
 #Model Fit - Mean, Naive, SSES (Early)
-```{r}
+```{r echo=FALSE}
 #Model 2: Arithmetic Mean 
 early.meanSeas <- meanf(y = early.training.ts, h = 2)
 mean_scores <- accuracy(early.meanSeas$mean, early.test.ts)  #store the performance metrics
@@ -139,7 +139,7 @@ SSES_scores <- accuracy(early.SSES$forecast,early.test.ts)
 
 ```
 #Model Fit - TBATS (Early)
-```{r}
+```{r echo=FALSE}
 #Model 5: TBATS
 early.TBATS <-  tbats(early.training.ts)
 early.TBATS.for <-  forecast(early.TBATS, h = 2)
@@ -159,7 +159,7 @@ TBATS_scores <- accuracy(early.TBATS.for$mean,early.test.ts)
 ```
 
 #Model Fit - NN (Early)
-```{r}
+```{r echo=FALSE}
 #Model 6: Neural Network
 early.NN.fit <- nnetar(early.training.ts,p=1,P=1)
   #nnetar(early.training.ts,p=1,P=0,xreg=fourier(early.training.ts, K=c(2,12)))
@@ -181,7 +181,7 @@ NN_scores <- accuracy(early.NN.for$mean,early.test.ts)
 ```
 
 #Model Plotting (Early)
-```{r}
+```{r echo=FALSE}
 #Early models plotting
 autoplot(early.ts) +
   autolayer(early.arima.for, PI=FALSE, series="ARIMA") +
@@ -196,7 +196,7 @@ autoplot(early.ts) +
 ```
 
 #Model Scoring (Early)
-```{r}
+```{r echo=FALSE}
 #Early models comparison
 early.scores <- as.data.frame(
   rbind(ARIMA_scores, mean_scores, snaive_scores, SSES_scores, TBATS_scores, NN_scores)
@@ -206,13 +206,13 @@ row.names(early.scores) <- c("ARIMA", "Mean", "Naive", "SSES", "TBATS", "Neural 
 print(early.scores)
 
 #choose model with lowest RMSE
-early.best_model_index <- which.min(scores[,"RMSE"])
-cat("The best model by RMSE is:", row.names(scores[early.best_model_index,]))  
+early.best_model_index <- which.min(early.scores[,"RMSE"])
+cat("The best model by RMSE is:", row.names(early.scores[early.best_model_index,]))  
 
 ```
 
 #RMSE - Early
-```{r}
+```{r echo=FALSE}
 kbl(early.scores, 
       caption = "Forecast Accuracy for Early Stage Funding Date",
       digits = array(6,ncol(early.scores))) %>%
@@ -224,7 +224,7 @@ kbl(early.scores,
 
 
 #Model Fit - ES (Late)
-```{r}
+```{r echo=FALSE}
 late.ES<-es(late.training.ts,model = "ZZZ",h=1,houldout=FALSE)
 late.ES.forecast<-forecast(late.ES, h=2)
 
@@ -234,7 +234,7 @@ autoplot(late.ts)+
 ```
 
 #Model Fit - Arima (Late)
-```{r}
+```{r echo=FALSE}
 #Fit the late data to an ARIMA
 #Model 1: ARIMA
 late.arima<-auto.arima(late.training.ts)
@@ -253,7 +253,7 @@ ARIMA_scores_late <- accuracy(late.arima.for$mean, late.test.ts)  #store the per
 ```
 
 #Model Fit - Mean, Naive, SSES (Late)
-```{r}
+```{r echo=FALSE}
 #Model 2: Arithmetic Mean 
 late.meanSeas <- meanf(y = late.training.ts, h = 2)
 mean_scores_late <- accuracy(late.meanSeas$mean, late.test.ts)  #store the performance metrics
@@ -268,7 +268,7 @@ SSES_scores_late <- accuracy(late.SSES$forecast,late.test.ts)
 
 ```
 #Model Fit - TBATS (Late)
-```{r}
+```{r echo=FALSE}
 #Model 5: TBATS
 late.TBATS <-  tbats(late.training.ts)
 late.TBATS.for <-  forecast(late.TBATS, h = 2)
@@ -288,7 +288,7 @@ TBATS_scores_late <- accuracy(late.TBATS.for$mean,late.test.ts)
 ```
 
 #Model Fit - NN (Late)
-```{r}
+```{r echo=FALSE}
 #Model 6: Neural Network
 late.NN.fit <- nnetar(late.training.ts,p=1,P=1)
   #nnetar(early.training.ts,p=1,P=0,xreg=fourier(early.training.ts, K=c(2,12)))
@@ -310,7 +310,7 @@ NN_scores_late <- accuracy(late.NN.for$mean,late.test.ts)
 ```
 
 #Model Plotting (Late)
-```{r}
+```{r echo=FALSE}
 #Early models plotting
 autoplot(late.ts) +
   autolayer(late.arima.for, PI=FALSE, series="ARIMA") +
@@ -325,7 +325,7 @@ autoplot(late.ts) +
 ```
 
 #Model Scoring (Late)
-```{r}
+```{r echo=FALSE}
 #Late models comparison
 late.scores <- as.data.frame(
   rbind(ARIMA_scores_late, mean_scores_late, snaive_scores_late, SSES_scores_late, TBATS_scores_late, NN_scores_late)
@@ -341,7 +341,7 @@ cat("The best model by RMSE is:", row.names(late.scores[late.best_model_index,])
 ```
 
 #RMSE - Late
-```{r}
+```{r echo=FALSE}
 kbl(late.scores, 
       caption = "Forecast Accuracy for Late Stage Funding Date",
       digits = array(6,ncol(late.scores))) %>%
