@@ -351,7 +351,6 @@ kbl(late.scores,
 
 ```
 
-
 #Plot the Best Models
 ```{r echo=FALSE}
 #early
@@ -370,4 +369,6 @@ autoplot(late.ts) +
   ylab("Funding ($)") +
   guides(colour=guide_legend(title="Forecast"))
 ```
+
 #Conclusions
+#There are some limitations to this dataset which have made it difficult to predict. The data is yearly (as opposed to monthly or daily) which means less datapoints and less accuracy in predictions. The data shows a drastic dip in all investments following 2020, which could be attributed to the Covid pandemic. These limitations made predictions difficult. It is unclear whether there will continue to be an increase in clean tech startup investment in the future. Most models say yes to both early and late-stage, but the "best" model (according to RMSE) says no. This is the same case when comparing early and late-stage investments. Most models say yes, there will be more late-stage than early-stage investment, but the "best" model says no. 
