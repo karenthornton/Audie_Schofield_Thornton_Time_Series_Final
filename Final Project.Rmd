@@ -137,14 +137,6 @@ snaive_scores <- accuracy(early.snaiveSeas$mean, early.test.ts)  #store the perf
 early.SSES <- es(early.training.ts, model="ZZZ", h=2, holdout=FALSE)
 SSES_scores <- accuracy(early.SSES$forecast,early.test.ts)
 
-#Plot
-#I'm not sure why this isn't working
-#autoplot(early.ts)+
- # autolayer(early.meanSeas, series = "Mean", PI = FALSE)+
-  #autolayer(early.snaiveSeas, series = "Naive", PI = FALSE)+
-  #autolayer(early.SSES, series = "SSES", PI = FALSE)+
-  #autolayer(early.test.ts, series = "Test", PI = FALSE)
-
 ```
 #Model Fit - TBATS (Early)
 ```{r}
@@ -158,6 +150,7 @@ autoplot(early.TBATS.for) + ylab("Funding")
 #Plot model + observed data
 autoplot(early.ts) +
   autolayer(early.TBATS.for, series="TBATS",PI=FALSE) +
+  autolayer(early.test.ts, series = "Test")+
   ylab("Funding")
 
 #model scoring
@@ -178,7 +171,9 @@ autoplot(early.NN.for) + ylab("Funding")
 
 #Plot model + observed data
 autoplot(early.ts) +
-  autolayer(early.NN.for, series="Neural Network",PI=FALSE) + ylab("Funding")
+  autolayer(early.NN.for, series="Neural Network",PI=FALSE)+
+  autolayer(early.test.ts, series = "Test")+
+  ylab("Funding")
 
 # Model 3:  Neural Network 
 NN_scores <- accuracy(early.NN.for$mean,early.test.ts)
@@ -208,12 +203,24 @@ early.scores <- as.data.frame(
   )
 row.names(early.scores) <- c("ARIMA", "Mean", "Naive", "SSES", "TBATS", "Neural Network")
 
+print(early.scores)
+
 #choose model with lowest RMSE
 early.best_model_index <- which.min(scores[,"RMSE"])
-cat("The best model by RMSE is:", row.names(scores[early.best_model_index,]))         
+cat("The best model by RMSE is:", row.names(scores[early.best_model_index,]))  
 
 ```
 
+#RMSE - Early
+```{r}
+kbl(early.scores, 
+      caption = "Forecast Accuracy for Early Stage Funding Date",
+      digits = array(6,ncol(early.scores))) %>%
+  kable_styling(full_width = FALSE, position = "center") %>%
+  #highlight model with lowest RMSE
+  kable_styling(latex_options="striped", stripe_index = which.min(seas_scores[,"RMSE"]))
+
+```
 
 #Model Fit - Arima (Late)
 ```{r}
@@ -243,16 +250,6 @@ autoplot(late.ts)+
   autolayer(late.ES.forecast$mean)
 ```
 
-#RMSE - Early
-```{r}
-kbl(early.scores, 
-      caption = "Forecast Accuracy for Early Stage Funding Date",
-      digits = array(6,ncol(early.scores))) %>%
-  kable_styling(full_width = FALSE, position = "center") %>%
-  #highlight model with lowest RMSE
-  kable_styling(latex_options="striped", stripe_index = which.min(seas_scores[,"RMSE"]))
-
-```
 
 #RMSE - Late
 
