@@ -116,8 +116,8 @@ early.arima.for<-forecast(early.arima, h=2)
 
 #Visualize Model
 autoplot(early.ts)+
-  autolayer(early.arima.for)+
-  autolayer(early.test.ts)
+  autolayer(early.arima.for, series = "ARIMA")+
+  autolayer(early.test.ts, series = "Test")
 
 ARIMA_scores <- accuracy(early.arima.for$mean, early.test.ts)  #store the performance metrics
 
@@ -136,6 +136,14 @@ snaive_scores <- accuracy(early.snaiveSeas$mean, early.test.ts)  #store the perf
 #Model 4: SSES
 early.SSES <- es(early.training.ts, model="ZZZ", h=2, holdout=FALSE)
 SSES_scores <- accuracy(early.SSES$forecast,early.test.ts)
+
+#Plot
+#I'm not sure why this isn't working
+#autoplot(early.ts)+
+ # autolayer(early.meanSeas, series = "Mean", PI = FALSE)+
+  #autolayer(early.snaiveSeas, series = "Naive", PI = FALSE)+
+  #autolayer(early.SSES, series = "SSES", PI = FALSE)+
+  #autolayer(early.test.ts, series = "Test", PI = FALSE)
 
 ```
 #Model Fit - TBATS (Early)
