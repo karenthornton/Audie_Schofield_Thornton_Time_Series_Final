@@ -351,4 +351,23 @@ kbl(late.scores,
 
 ```
 
+
+#Plot the Best Models
+```{r echo=FALSE}
+#early
+autoplot(early.ts) +
+  autolayer(early.NN.for, series="Neural Network",PI=FALSE)+
+  autolayer(early.test.ts, series = "Test")+
+  xlab("Year") + 
+  ylab("Funding ($)") +
+  guides(colour=guide_legend(title="Forecast"))
+
+#late
+autoplot(late.ts) +
+  autolayer(late.meanSeas, PI=FALSE, series="Mean")+
+  autolayer(late.test.ts, series = "Test")+
+  xlab("Year") + 
+  ylab("Funding ($)") +
+  guides(colour=guide_legend(title="Forecast"))
+```
 #Conclusions
