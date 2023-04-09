@@ -19,6 +19,7 @@ library(forecast)
 library(tseries)
 library(smooth)
 library(dplyr)
+library(kableExtra)
 ```
 
 #Data Wrangling - Full sets
@@ -73,6 +74,13 @@ late.training.ts<-ts(late_stage_sum_training.df[,2], start = c(2000,1), frequenc
 ```{r}
 late.test.ts <- subset(late.ts, start = length(late.ts)-1)
 early.test.ts <- subset(early.ts, start = length(early.ts)-1)
+
+autoplot(early.training.ts)
+autoplot(early.test.ts)
+
+autoplot(late.training.ts)
+autoplot(late.test.ts)
+
 ```
 
 #Visualization
@@ -100,53 +108,247 @@ Pacf(late.ts,lag.max = 40,main="Late PACF",ylim=c(-1,1))
 #Model Fit - Arima (Early)
 ```{r}
 #Fit the early data to an ARIMA
+#Model 1: ARIMA
+early.arima<-auto.arima(early.training.ts)
+summary(early.arima)
 
-
-#Change these to have the training datasets
-
-#early_ARIMA<-auto.arima(early.ts)
-#summary(early_ARIMA)
-#early_forecast<-forecast(early_ARIMA, h=3)
-#autoplot(early_forecast)
-
-
-#ES_early<-es(early.ts, h=1, silent=FALSE, holdout=FALSE)
-
+early.arima.for<-forecast(early.arima, h=2)
 
 #Visualize Model
+autoplot(early.ts)+
+  autolayer(early.arima.for, series = "ARIMA")+
+  autolayer(early.test.ts, series = "Test")
 
+ARIMA_scores <- accuracy(early.arima.for$mean, early.test.ts)  #store the performance metrics
 
 ```
 
-#Model Fit - Arima (Late)
+#Model Fit - Mean, Naive, SSES (Early)
 ```{r}
-#Fit the late data to an ARIMA
-late.arima<-auto.arima(late.training.ts)
-summary(late.arima)
+#Model 2: Arithmetic Mean 
+early.meanSeas <- meanf(y = early.training.ts, h = 2)
+mean_scores <- accuracy(early.meanSeas$mean, early.test.ts)  #store the performance metrics
 
-late.arima.for<-forecast(late.arima, h=3)
+#Model 3: Seasonal Naive
+early.snaiveSeas <- snaive(early.training.ts, h=2)
+snaive_scores <- accuracy(early.snaiveSeas$mean, early.test.ts)  #store the performance metrics
 
+#Model 4: SSES
+early.SSES <- es(early.training.ts, model="ZZZ", h=2, holdout=FALSE)
+SSES_scores <- accuracy(early.SSES$forecast,early.test.ts)
 
-#Visualize Model
-autoplot(late.ts)+
-  autolayer(late.arima.for$mean)+
-  autolayer(late.ES.forecast$mean)
+```
+#Model Fit - TBATS (Early)
+```{r}
+#Model 5: TBATS
+early.TBATS <-  tbats(early.training.ts)
+early.TBATS.for <-  forecast(early.TBATS, h = 2)
+
+#Plot forcasting results
+autoplot(early.TBATS.for) + ylab("Funding")
+
+#Plot model + observed data
+autoplot(early.ts) +
+  autolayer(early.TBATS.for, series="TBATS",PI=FALSE) +
+  autolayer(early.test.ts, series = "Test")+
+  ylab("Funding")
+
+#model scoring
+TBATS_scores <- accuracy(early.TBATS.for$mean,early.test.ts)
+
 ```
 
-#Model Fit - ??? (Early)
+#Model Fit - NN (Early)
+```{r}
+#Model 6: Neural Network
+early.NN.fit <- nnetar(early.training.ts,p=1,P=1)
+  #nnetar(early.training.ts,p=1,P=0,xreg=fourier(early.training.ts, K=c(2,12)))
+
+early.NN.for <- forecast(early.NN.fit, h=2)
+
+#Plot forecasting results
+autoplot(early.NN.for) + ylab("Funding")
+
+#Plot model + observed data
+autoplot(early.ts) +
+  autolayer(early.NN.for, series="Neural Network",PI=FALSE)+
+  autolayer(early.test.ts, series = "Test")+
+  ylab("Funding")
+
+# Model 3:  Neural Network 
+NN_scores <- accuracy(early.NN.for$mean,early.test.ts)
+
+```
+
+#Model Plotting (Early)
+```{r}
+#Early models plotting
+autoplot(early.ts) +
+  autolayer(early.arima.for, PI=FALSE, series="ARIMA") +
+  autolayer(early.meanSeas, PI=FALSE, series="Mean") +
+  autolayer(early.snaiveSeas, PI=FALSE, series="Naive") +
+  autolayer(early.SSES$forecast, PI=FALSE, series="SSES") +
+  autolayer(early.TBATS.for,PI=FALSE, series="TBATS") +
+  autolayer(early.NN.for,PI=FALSE, series="NN") +
+  xlab("Year") + ylab("Funding ($)") +
+  guides(colour=guide_legend(title="Forecast"))
+
+```
+
+#Model Scoring (Early)
+```{r}
+#Early models comparison
+early.scores <- as.data.frame(
+  rbind(ARIMA_scores, mean_scores, snaive_scores, SSES_scores, TBATS_scores, NN_scores)
+  )
+row.names(early.scores) <- c("ARIMA", "Mean", "Naive", "SSES", "TBATS", "Neural Network")
+
+print(early.scores)
+
+#choose model with lowest RMSE
+early.best_model_index <- which.min(scores[,"RMSE"])
+cat("The best model by RMSE is:", row.names(scores[early.best_model_index,]))  
+
+```
+
+#RMSE - Early
+```{r}
+kbl(early.scores, 
+      caption = "Forecast Accuracy for Early Stage Funding Date",
+      digits = array(6,ncol(early.scores))) %>%
+  kable_styling(full_width = FALSE, position = "center") %>%
+  #highlight model with lowest RMSE
+  kable_styling(latex_options="striped", stripe_index = which.min(seas_scores[,"RMSE"]))
+
+```
+
 
 #Model Fit - ES (Late)
 ```{r}
 late.ES<-es(late.training.ts,model = "ZZZ",h=1,houldout=FALSE)
-late.ES.forecast<-forecast(late.ES, h=3)
+late.ES.forecast<-forecast(late.ES, h=2)
 
 plot(late.ES.forecast)
 autoplot(late.ts)+
   autolayer(late.ES.forecast$mean)
 ```
 
-#RMSE - Early
+#Model Fit - Arima (Late)
+```{r}
+#Fit the late data to an ARIMA
+#Model 1: ARIMA
+late.arima<-auto.arima(late.training.ts)
+summary(late.arima)
+
+late.arima.for<-forecast(late.arima, h=2)
+
+#Visualize Model
+autoplot(late.ts)+
+  autolayer(late.arima.for$mean)+
+  autolayer(late.test.ts)+
+  ylab("Total Funding")
+
+ARIMA_scores_late <- accuracy(late.arima.for$mean, late.test.ts)  #store the performance metrics
+
+```
+
+#Model Fit - Mean, Naive, SSES (Late)
+```{r}
+#Model 2: Arithmetic Mean 
+late.meanSeas <- meanf(y = late.training.ts, h = 2)
+mean_scores_late <- accuracy(late.meanSeas$mean, late.test.ts)  #store the performance metrics
+
+#Model 3: Seasonal Naive
+late.snaiveSeas <- snaive(late.training.ts, h=2)
+snaive_scores_late <- accuracy(late.snaiveSeas$mean, late.test.ts)  #store the performance metrics
+
+#Model 4: SSES
+late.SSES <- es(late.training.ts, model="ZZZ", h=2, holdout=FALSE)
+SSES_scores_late <- accuracy(late.SSES$forecast,late.test.ts)
+
+```
+#Model Fit - TBATS (Late)
+```{r}
+#Model 5: TBATS
+late.TBATS <-  tbats(late.training.ts)
+late.TBATS.for <-  forecast(late.TBATS, h = 2)
+
+#Plot forcasting results
+autoplot(late.TBATS.for) + ylab("Funding")
+
+#Plot model + observed data
+autoplot(late.ts) +
+  autolayer(late.TBATS.for, series="TBATS",PI=FALSE) +
+  autolayer(late.test.ts, series = "Test")+
+  ylab("Funding")
+
+#model scoring
+TBATS_scores_late <- accuracy(late.TBATS.for$mean,late.test.ts)
+
+```
+
+#Model Fit - NN (Late)
+```{r}
+#Model 6: Neural Network
+late.NN.fit <- nnetar(late.training.ts,p=1,P=1)
+  #nnetar(early.training.ts,p=1,P=0,xreg=fourier(early.training.ts, K=c(2,12)))
+
+late.NN.for <- forecast(late.NN.fit, h=2)
+
+#Plot forecasting results
+autoplot(late.NN.for) + ylab("Funding")
+
+#Plot model + observed data
+autoplot(late.ts) +
+  autolayer(late.NN.for, series="Neural Network",PI=FALSE)+
+  autolayer(late.test.ts, series = "Test")+
+  ylab("Funding")
+
+# Model 3:  Neural Network 
+NN_scores_late <- accuracy(late.NN.for$mean,late.test.ts)
+
+```
+
+#Model Plotting (Late)
+```{r}
+#Early models plotting
+autoplot(late.ts) +
+  autolayer(late.arima.for, PI=FALSE, series="ARIMA") +
+  autolayer(late.meanSeas, PI=FALSE, series="Mean") +
+  autolayer(late.snaiveSeas, PI=FALSE, series="Naive") +
+  autolayer(late.SSES$forecast, PI=FALSE, series="SSES") +
+  autolayer(late.TBATS.for,PI=FALSE, series="TBATS") +
+  autolayer(late.NN.for,PI=FALSE, series="NN") +
+  xlab("Year") + ylab("Funding ($)") +
+  guides(colour=guide_legend(title="Forecast"))
+
+```
+
+#Model Scoring (Late)
+```{r}
+#Late models comparison
+late.scores <- as.data.frame(
+  rbind(ARIMA_scores_late, mean_scores_late, snaive_scores_late, SSES_scores_late, TBATS_scores_late, NN_scores_late)
+  )
+row.names(late.scores) <- c("ARIMA", "Mean", "Naive", "SSES", "TBATS", "Neural Network")
+
+print(late.scores)
+
+#choose model with lowest RMSE
+late.best_model_index <- which.min(late.scores[,"RMSE"])
+cat("The best model by RMSE is:", row.names(late.scores[late.best_model_index,]))  
+
+```
 
 #RMSE - Late
+```{r}
+kbl(late.scores, 
+      caption = "Forecast Accuracy for Late Stage Funding Date",
+      digits = array(6,ncol(late.scores))) %>%
+  kable_styling(full_width = FALSE, position = "center") %>%
+  #highlight model with lowest RMSE
+  kable_styling(latex_options="striped", stripe_index = which.min(seas_scores_late[,"RMSE"]))
+
+```
 
 #Conclusions
