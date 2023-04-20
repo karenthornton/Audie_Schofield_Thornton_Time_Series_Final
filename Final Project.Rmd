@@ -387,7 +387,7 @@ late_stage_sum_training.df.good <- late_stage_sum.df %>%
   filter(between(year, as.Date("2000-01-01"), as.Date("2020-01-01")))
 ```
 
-#Creating Time Series
+#Creating Time Series 2
 ```{r echo=FALSE}
 
 #create time series for the training datasets
@@ -395,7 +395,7 @@ early.training.ts.good<-ts(early_stage_sum_training.df.good[,2], start = c(2000,
 late.training.ts.good<-ts(late_stage_sum_training.df.good[,2], start = c(2000,1), frequency = 1)
 ```
 
-#Data Wrangling - Testing Sets
+#Data Wrangling - Testing Sets 2
 ```{r echo=FALSE}
 late.test.ts.good <- subset(late.ts, start = length(late.ts)-1)
 early.test.ts.good <- subset(early.ts, start = length(early.ts)-1)
@@ -408,8 +408,7 @@ autoplot(late.test.ts)
 
 ```
 
-
-#Model Fit - Arima (Early)
+#Model Fit - Arima (Early) 2
 ```{r echo=FALSE}
 #Fit the early data to an ARIMA
 #Model 1: ARIMA
@@ -424,6 +423,24 @@ autoplot(early.ts)+
   autolayer(early.test.ts.good, series = "Test")
 
 ARIMA_scores_good <- accuracy(early.arima.for.good$mean, early.test.ts.good)  #store the performance metrics
+
+```
+
+#Model Fit - Arima (Late) 2
+```{r echo=FALSE}
+#Fit the late data to an ARIMA
+#Model 1: ARIMA
+late.arima.good<-auto.arima(late.training.ts.good)
+summary(late.arima.good)
+
+late.arima.for.good<-forecast(late.arima.good, h=3)
+
+#Visualize Model
+autoplot(late.ts)+
+  autolayer(late.arima.for.good, series = "ARIMA")+
+  autolayer(late.test.ts.good, series = "Test")
+
+ARIMA_scores_late_good <- accuracy(late.arima.for.good$mean, late.test.ts.good)  #store the performance metrics
 
 ```
 
