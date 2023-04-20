@@ -370,6 +370,7 @@ autoplot(late.ts) +
   guides(colour=guide_legend(title="Forecast"))
 ```
 
+
 #Try taking out bad years
 
 
