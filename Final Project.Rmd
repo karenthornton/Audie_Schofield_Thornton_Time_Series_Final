@@ -370,5 +370,62 @@ autoplot(late.ts) +
   guides(colour=guide_legend(title="Forecast"))
 ```
 
+#Try taking out bad years
+
+
+
+
+
+#Data Wrangling - Training Sets 2
+```{r echo=FALSE}
+#create an early stage df with the last 2 years missing
+early_stage_sum_training.df.good <- early_stage_sum.df %>%
+  filter(between(year, as.Date("2000-01-01"), as.Date("2020-01-01")))
+
+#create a late stage df with the last year missing
+late_stage_sum_training.df.good <- late_stage_sum.df %>%
+  filter(between(year, as.Date("2000-01-01"), as.Date("2020-01-01")))
+```
+
+#Creating Time Series
+```{r echo=FALSE}
+
+#create time series for the training datasets
+early.training.ts.good<-ts(early_stage_sum_training.df.good[,2], start = c(2000,1), frequency = 1)
+late.training.ts.good<-ts(late_stage_sum_training.df.good[,2], start = c(2000,1), frequency = 1)
+```
+
+#Data Wrangling - Testing Sets
+```{r echo=FALSE}
+late.test.ts.good <- subset(late.ts, start = length(late.ts)-1)
+early.test.ts.good <- subset(early.ts, start = length(early.ts)-1)
+
+autoplot(early.training.ts.good)
+autoplot(early.test.ts)
+
+autoplot(late.training.ts.good)
+autoplot(late.test.ts)
+
+```
+
+
+#Model Fit - Arima (Early)
+```{r echo=FALSE}
+#Fit the early data to an ARIMA
+#Model 1: ARIMA
+early.arima.good<-auto.arima(early.training.ts.good)
+summary(early.arima.good)
+
+early.arima.for.good<-forecast(early.arima.good, h=3)
+
+#Visualize Model
+autoplot(early.ts)+
+  autolayer(early.arima.for.good, series = "ARIMA")+
+  autolayer(early.test.ts.good, series = "Test")
+
+ARIMA_scores_good <- accuracy(early.arima.for.good$mean, early.test.ts.good)  #store the performance metrics
+
+```
+
 #Conclusions
 #There are some limitations to this dataset which have made it difficult to predict. The data is yearly (as opposed to monthly or daily) which means less datapoints and less accuracy in predictions. The data shows a drastic dip in all investments following 2020, which could be attributed to the Covid pandemic. These limitations made predictions difficult. It is unclear whether there will continue to be an increase in clean tech startup investment in the future. Most models say yes to both early and late-stage, but the "best" model (according to RMSE) says no. This is the same case when comparing early and late-stage investments. Most models say yes, there will be more late-stage than early-stage investment, but the "best" model says no. 
