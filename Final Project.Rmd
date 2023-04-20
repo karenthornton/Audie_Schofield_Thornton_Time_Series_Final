@@ -23,7 +23,7 @@ library(kableExtra)
 ```
 
 #Data Wrangling - Full sets
-```{r echo=FALSE}
+```{r echo=FALSE, warning=FALSE}
 #load the data
 start_up_funding.raw<-read.csv("./start_ups_funding.csv")
 
