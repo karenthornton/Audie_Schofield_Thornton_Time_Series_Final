@@ -72,8 +72,16 @@ late.training.ts<-ts(late_stage_sum_training.df[,2], start = c(2000,1), frequenc
 
 #Data Wrangling - Testing Sets
 ```{r echo=FALSE}
-late.test.ts <- subset(late.ts, start = length(late.ts)-1)
-early.test.ts <- subset(early.ts, start = length(early.ts)-1)
+#create an early stage testing df 2020-2021
+early_stage_sum_testing.df <- early_stage_sum.df %>%
+  filter(between(year, as.Date("2020-01-01"), as.Date("2021-01-01")))
+
+#create a late stage testing df 2020-2021
+late_stage_sum_testing.df <- late_stage_sum.df %>%
+  filter(between(year, as.Date("2020-01-01"), as.Date("2021-01-01")))
+
+early.test.ts<-ts(early_stage_sum_testing.df[,2], start = c(2020, 1), frequency = 1)
+late.test.ts<-ts(late_stage_sum_testing.df[,2], start = c(2020, 1), frequency = 1)
 
 autoplot(early.training.ts)
 autoplot(early.test.ts)
