@@ -120,10 +120,10 @@ Pacf(late.ts,lag.max = 40,main="Late PACF",ylim=c(-1,1))
 early.arima<-auto.arima(early.training.ts)
 summary(early.arima)
 
-early.arima.for<-forecast(early.arima, h=2)
+early.arima.for<-forecast(early.arima, h=6)
 
 #Visualize Model
-autoplot(early.ts)+
+autoplot(early.training.ts)+
   autolayer(early.arima.for, series = "ARIMA")+
   autolayer(early.test.ts, series = "Test")
 
@@ -134,15 +134,15 @@ ARIMA_scores <- accuracy(early.arima.for$mean, early.test.ts)  #store the perfor
 #Model Fit - Mean, Naive, SSES (Early)
 ```{r echo=FALSE}
 #Model 2: Arithmetic Mean 
-early.meanSeas <- meanf(y = early.training.ts, h = 2)
+early.meanSeas <- meanf(y = early.training.ts, h = 6)
 mean_scores <- accuracy(early.meanSeas$mean, early.test.ts)  #store the performance metrics
 
 #Model 3: Seasonal Naive
-early.snaiveSeas <- snaive(early.training.ts, h=2)
+early.snaiveSeas <- snaive(early.training.ts, h=6)
 snaive_scores <- accuracy(early.snaiveSeas$mean, early.test.ts)  #store the performance metrics
 
 #Model 4: SSES
-early.SSES <- es(early.training.ts, model="ZZZ", h=2, holdout=FALSE)
+early.SSES <- es(early.training.ts, model="ZZZ", h=6, holdout=FALSE)
 SSES_scores <- accuracy(early.SSES$forecast,early.test.ts)
 
 ```
@@ -191,7 +191,7 @@ NN_scores <- accuracy(early.NN.for$mean,early.test.ts)
 #Model Plotting (Early)
 ```{r echo=FALSE}
 #Early models plotting
-autoplot(early.ts) +
+autoplot(early.training.ts) +
   autolayer(early.arima.for, PI=FALSE, series="ARIMA") +
   autolayer(early.meanSeas, PI=FALSE, series="Mean") +
   autolayer(early.snaiveSeas, PI=FALSE, series="Naive") +
