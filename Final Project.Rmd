@@ -26,6 +26,14 @@ library(kableExtra)
 -There are two stages of funding stages: early stage and late stage. Early stage can be considered seed funding and late stage can be something like series C funding. Late stage funding is often more money for fewer companies
 -Companies that make it to late stage funding have a higher chance of being sucessfull.
 -Greater late stage funding investment suggests a more maturation of the Clean Tech industry. 
+
+#Research Questions
+1. Are investments in clean tech startups expected to continue to increase?
+2. As the clean tech industry matures will investments in late-stage startups outpace investments in earlier-stage startups? 
+
+#Data
+The data was collected from the IEA. The data is broken up into early and late stage investments. 
+
 #Data Wrangling - Full sets
 ```{r echo=FALSE, warning=FALSE}
 #load the data
