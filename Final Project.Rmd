@@ -38,6 +38,9 @@ early_stage_sum.df<-aggregate(value~year, data = early_stage.df,sum)
 #adding the first month of each year to the data (early stages)
 early_stage_sum.df$year<-as.Date(paste0(early_stage_sum.df$year,"-01-01"))
 
+#dropping last year from df
+early_stage_sum.df<-early_stage_sum.df[1:22,]
+
 #creating a df for only the late stage
 late_stage.df<-full_funding.df[full_funding.df$funding.stage=="Later stage",]
 
@@ -45,6 +48,9 @@ late_stage.df<-full_funding.df[full_funding.df$funding.stage=="Later stage",]
 late_stage_sum.df<-aggregate(value~year, data = late_stage.df,sum)
 #adding the first month of each year to the data (late stages)
 late_stage_sum.df$year<-as.Date(paste0(late_stage_sum.df$year,"-01-01"))
+#dropping last year from df
+late_stage_sum.df<-late_stage_sum.df[1:22,]
+
 
 ```
 
@@ -52,11 +58,11 @@ late_stage_sum.df$year<-as.Date(paste0(late_stage_sum.df$year,"-01-01"))
 ```{r echo=FALSE}
 #create an early stage df with the last year missing
 early_stage_sum_training.df <- early_stage_sum.df %>%
-  filter(between(year, as.Date("2000-01-01"), as.Date("2021-01-01")))
+  filter(between(year, as.Date("2000-01-01"), as.Date("2020-01-01")))
 
 #create a late stage df with the last year missing
 late_stage_sum_training.df <- late_stage_sum.df %>%
-  filter(between(year, as.Date("2000-01-01"), as.Date("2021-01-01")))
+  filter(between(year, as.Date("2000-01-01"), as.Date("2020-01-01")))
 ```
 
 #Creating Time Series
@@ -150,7 +156,7 @@ SSES_scores <- accuracy(early.SSES$forecast,early.test.ts)
 ```{r echo=FALSE}
 #Model 5: TBATS
 early.TBATS <-  tbats(early.training.ts)
-early.TBATS.for <-  forecast(early.TBATS, h = 2)
+early.TBATS.for <-  forecast(early.TBATS, h = 6)
 
 #Plot forcasting results
 autoplot(early.TBATS.for) + ylab("Funding")
@@ -172,7 +178,7 @@ TBATS_scores <- accuracy(early.TBATS.for$mean,early.test.ts)
 early.NN.fit <- nnetar(early.training.ts,p=1,P=1)
   #nnetar(early.training.ts,p=1,P=0,xreg=fourier(early.training.ts, K=c(2,12)))
 
-early.NN.for <- forecast(early.NN.fit, h=2)
+early.NN.for <- forecast(early.NN.fit, h=6)
 
 #Plot forecasting results
 autoplot(early.NN.for) + ylab("Funding")
@@ -198,6 +204,7 @@ autoplot(early.training.ts) +
   autolayer(early.SSES$forecast, PI=FALSE, series="SSES") +
   autolayer(early.TBATS.for,PI=FALSE, series="TBATS") +
   autolayer(early.NN.for,PI=FALSE, series="NN") +
+  autolayer(early.test.ts, series = "Test")
   xlab("Year") + ylab("Funding ($)") +
   guides(colour=guide_legend(title="Forecast"))
 
