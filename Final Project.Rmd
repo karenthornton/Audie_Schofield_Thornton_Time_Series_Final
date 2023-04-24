@@ -21,7 +21,11 @@ library(smooth)
 library(dplyr)
 library(kableExtra)
 ```
-
+#Background
+-Clean Tech startups are on the rise 
+-There are two stages of funding stages: early stage and late stage. Early stage can be considered seed funding and late stage can be something like series C funding. Late stage funding is often more money for fewer companies
+-Companies that make it to late stage funding have a higher chance of being sucessfull.
+-Greater late stage funding investment suggests a more maturation of the Clean Tech industry. 
 #Data Wrangling - Full sets
 ```{r echo=FALSE, warning=FALSE}
 #load the data
