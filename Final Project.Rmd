@@ -415,4 +415,7 @@ autoplot(late.ts) +
 ```
 
 #Conclusions
-There are some limitations to this dataset which have made it difficult to predict. These limitations made predictions difficult. It is unclear whether there will continue to be an increase in clean tech startup investment in the future. Looking at the "best" model, the forecast for early stage investment seems to stay constant (a straight line), where late stage investment has an increase.This shows that, with the limited data available, there will be an overall increase in clean tech investment and the late stage investment will continue to be greater than early stage invesment. 
+There are some limitations to this dataset which have made it difficult to predict. These limitations made predictions difficult. It is unclear whether there will continue to be an increase in clean tech startup investment in the future. Looking at the "best" model, the forecast for early stage investment seems to stay constant (a straight line), where late stage investment has an increase.This shows that, with the limited data available, there will be an overall increase in clean tech investment and the late stage investment will continue to be greater than early stage investment. 
+
+#Possible Future Steps
+Analyze the breakdown of early vs. late-stage investment by sector (energy, non-energy, grid, fossil fuel, energy efficiency, etc.)
