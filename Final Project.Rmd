@@ -2,8 +2,10 @@
 title: "Startups Funding"
 author: "Michael Audie, Karen Thornton, Hannah Schofield"
 date: "2023-04-01"
-output: html_document
-editor_options: 
+output:
+  pdf_document: default
+  html_document: default
+editor_options:
   chunk_output_type: console
 ---
 
@@ -258,7 +260,7 @@ kbl(early.scores,
       digits = array(6,ncol(early.scores))) %>%
   kable_styling(full_width = FALSE, position = "center") %>%
   #highlight model with lowest RMSE
-  kable_styling(latex_options="striped", stripe_index = which.min(seas_scores[,"RMSE"]))
+  kable_styling(latex_options="striped", stripe_index = which.min(early.scores[,"RMSE"]))
 ```
 
 
@@ -392,7 +394,7 @@ kbl(late.scores,
       digits = array(6,ncol(late.scores))) %>%
   kable_styling(full_width = FALSE, position = "center") %>%
   #highlight model with lowest RMSE
-  kable_styling(latex_options="striped", stripe_index = which.min(seas_scores_late[,"RMSE"]))
+  kable_styling(latex_options="striped", stripe_index = which.min(late.scores[,"RMSE"]))
 ```
 
 #Plot the Best Models
