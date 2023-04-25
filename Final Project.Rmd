@@ -313,6 +313,7 @@ autoplot(late.ts) +
   autolayer(late.test.ts, series = "Test")+
   ylab("Funding")
 ```
+
 #Model Fit - TBATS (Late)
 ```{r echo=FALSE}
 #Model 5: TBATS
@@ -330,6 +331,7 @@ autoplot(late.ts) +
 
 #model scoring
 TBATS_scores_late <- accuracy(late.TBATS.for$mean,late.test.ts)
+#store scoring metrics
 ```
 
 #Model Fit - NN (Late)
@@ -351,6 +353,7 @@ autoplot(late.ts) +
 
 # Model 3:  Neural Network 
 NN_scores_late <- accuracy(late.NN.for$mean,late.test.ts)
+#store scoring metrics
 ```
 
 #Model Plotting (Late)
@@ -396,7 +399,7 @@ kbl(late.scores,
 ```{r echo=FALSE}
 #early
 autoplot(early.ts) +
-  autolayer(early.NN.for, series="Neural Network",PI=FALSE)+
+  autolayer(early.TBATS.for, series="TBATS",PI=FALSE)+
   autolayer(early.test.ts, series = "Test")+
   xlab("Year") + 
   ylab("Funding ($)") +
@@ -404,7 +407,7 @@ autoplot(early.ts) +
 
 #late
 autoplot(late.ts) +
-  autolayer(late.meanSeas, PI=FALSE, series="Mean")+
+  autolayer(late.TBATS.for, PI=FALSE, series="TBATS")+
   autolayer(late.test.ts, series = "Test")+
   xlab("Year") + 
   ylab("Funding ($)") +
