@@ -62,8 +62,6 @@ late_stage_sum.df<-aggregate(value~year, data = late_stage.df,sum)
 late_stage_sum.df$year<-as.Date(paste0(late_stage_sum.df$year,"-01-01"))
 #dropping last year from df
 late_stage_sum.df<-late_stage_sum.df[1:22,]
-
-
 ```
 
 #Data Wrangling - Training Sets
@@ -106,7 +104,6 @@ autoplot(early.test.ts)
 
 autoplot(late.training.ts)
 autoplot(late.test.ts)
-
 ```
 
 #Visualization
@@ -146,7 +143,6 @@ autoplot(early.training.ts)+
   autolayer(early.test.ts, series = "Test")
 
 ARIMA_scores <- accuracy(early.arima.for$mean, early.test.ts)  #store the performance metrics
-
 ```
 
 #Model Fit - Mean, Naive, SSES (Early)
@@ -162,7 +158,6 @@ snaive_scores <- accuracy(early.snaiveSeas$mean, early.test.ts)  #store the perf
 #Model 4: SSES
 early.SSES <- es(early.training.ts, model="ZZZ", h=6, holdout=FALSE)
 SSES_scores <- accuracy(early.SSES$forecast,early.test.ts)
-
 ```
 #Model Fit - TBATS (Early)
 ```{r echo=FALSE}
@@ -181,7 +176,6 @@ autoplot(early.ts) +
 
 #model scoring
 TBATS_scores <- accuracy(early.TBATS.for$mean,early.test.ts)
-
 ```
 
 #Model Fit - NN (Early)
@@ -203,7 +197,6 @@ autoplot(early.ts) +
 
 # Model 3:  Neural Network 
 NN_scores <- accuracy(early.NN.for$mean,early.test.ts)
-
 ```
 
 #Model Plotting (Early)
@@ -219,7 +212,6 @@ autoplot(early.training.ts) +
   autolayer(early.test.ts, series = "Test") +
   xlab("Year") + ylab("Funding ($)") +
   guides(colour=guide_legend(title="Forecast"))
-
 ```
 
 #Model Scoring (Early)
@@ -235,7 +227,6 @@ print(early.scores)
 #choose model with lowest RMSE
 early.best_model_index <- which.min(early.scores[,"RMSE"])
 cat("The best model by RMSE is:", row.names(early.scores[early.best_model_index,]))  
-
 ```
 
 #RMSE - Early
@@ -246,7 +237,6 @@ kbl(early.scores,
   kable_styling(full_width = FALSE, position = "center") %>%
   #highlight model with lowest RMSE
   kable_styling(latex_options="striped", stripe_index = which.min(seas_scores[,"RMSE"]))
-
 ```
 
 
@@ -276,7 +266,6 @@ autoplot(late.ts)+
   ylab("Total Funding")
 
 ARIMA_scores_late <- accuracy(late.arima.for$mean, late.test.ts)  #store the performance metrics
-
 ```
 
 #Model Fit - Mean, Naive, SSES (Late)
@@ -292,7 +281,6 @@ snaive_scores_late <- accuracy(late.snaiveSeas$mean, late.test.ts)  #store the p
 #Model 4: SSES
 late.SSES <- es(late.training.ts, model="ZZZ", h=2, holdout=FALSE)
 SSES_scores_late <- accuracy(late.SSES$forecast,late.test.ts)
-
 ```
 #Model Fit - TBATS (Late)
 ```{r echo=FALSE}
@@ -311,7 +299,6 @@ autoplot(late.ts) +
 
 #model scoring
 TBATS_scores_late <- accuracy(late.TBATS.for$mean,late.test.ts)
-
 ```
 
 #Model Fit - NN (Late)
@@ -333,7 +320,6 @@ autoplot(late.ts) +
 
 # Model 3:  Neural Network 
 NN_scores_late <- accuracy(late.NN.for$mean,late.test.ts)
-
 ```
 
 #Model Plotting (Late)
@@ -348,7 +334,6 @@ autoplot(late.ts) +
   autolayer(late.NN.for,PI=FALSE, series="NN") +
   xlab("Year") + ylab("Funding ($)") +
   guides(colour=guide_legend(title="Forecast"))
-
 ```
 
 #Model Scoring (Late)
@@ -364,7 +349,6 @@ print(late.scores)
 #choose model with lowest RMSE
 late.best_model_index <- which.min(late.scores[,"RMSE"])
 cat("The best model by RMSE is:", row.names(late.scores[late.best_model_index,]))  
-
 ```
 
 #RMSE - Late
@@ -375,7 +359,6 @@ kbl(late.scores,
   kable_styling(full_width = FALSE, position = "center") %>%
   #highlight model with lowest RMSE
   kable_styling(latex_options="striped", stripe_index = which.min(seas_scores_late[,"RMSE"]))
-
 ```
 
 #Plot the Best Models
@@ -399,4 +382,4 @@ autoplot(late.ts) +
 
 
 #Conclusions
-#There are some limitations to this dataset which have made it difficult to predict. The data is yearly (as opposed to monthly or daily) which means less datapoints and less accuracy in predictions. The data shows a drastic dip in all investments following 2020, which could be attributed to the Covid pandemic. These limitations made predictions difficult. It is unclear whether there will continue to be an increase in clean tech startup investment in the future. Most models say yes to both early and late-stage, but the "best" model (according to RMSE) says no. This is the same case when comparing early and late-stage investments. Most models say yes, there will be more late-stage than early-stage investment, but the "best" model says no. 
+There are some limitations to this dataset which have made it difficult to predict. The data is yearly (as opposed to monthly or daily) which means less datapoints and less accuracy in predictions. The data shows a drastic dip in all investments following 2020, which could be attributed to the Covid pandemic. These limitations made predictions difficult. It is unclear whether there will continue to be an increase in clean tech startup investment in the future. Most models say yes to both early and late-stage, but the "best" model (according to RMSE) says no. This is the same case when comparing early and late-stage investments. Most models say yes, there will be more late-stage than early-stage investment, but the "best" model says no. 
