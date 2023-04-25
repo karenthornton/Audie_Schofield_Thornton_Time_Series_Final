@@ -149,22 +149,34 @@ autoplot(early.training.ts)+
   autolayer(early.arima.for, series = "ARIMA")+
   autolayer(early.test.ts, series = "Test")
 
-ARIMA_scores <- accuracy(early.arima.for$mean, early.test.ts)  #store the performance metrics
+ARIMA_scores <- accuracy(early.arima.for$mean, early.test.ts)
+#store the performance metrics
 ```
 
 #Model Fit - Mean, Naive, SSES (Early)
 ```{r echo=FALSE}
 #Model 2: Arithmetic Mean 
 early.meanSeas <- meanf(y = early.training.ts, h = 6)
-mean_scores <- accuracy(early.meanSeas$mean, early.test.ts)  #store the performance metrics
+mean_scores <- accuracy(early.meanSeas$mean, early.test.ts)  
+#store the performance metrics
 
 #Model 3: Seasonal Naive
 early.snaiveSeas <- snaive(early.training.ts, h=6)
-snaive_scores <- accuracy(early.snaiveSeas$mean, early.test.ts)  #store the performance metrics
+snaive_scores <- accuracy(early.snaiveSeas$mean, early.test.ts)  
+#store the performance metrics
 
 #Model 4: SSES
 early.SSES <- es(early.training.ts, model="ZZZ", h=6, holdout=FALSE)
 SSES_scores <- accuracy(early.SSES$forecast,early.test.ts)
+#store the performance metrics
+
+#Plot model + observed data
+autoplot(early.ts) +
+  autolayer(early.meanSeas, series="Mean",PI=FALSE)+
+  autolayer(early.snaiveSeas, series="Naive",PI=FALSE)+
+  autolayer(early.SSES$forecast, series="SSES",PI=FALSE)+
+  autolayer(early.test.ts, series = "Test")+
+  ylab("Funding")
 ```
 
 #Model Fit - TBATS (Early)
@@ -184,6 +196,7 @@ autoplot(early.ts) +
 
 #model scoring
 TBATS_scores <- accuracy(early.TBATS.for$mean,early.test.ts)
+#store the performance metrics
 ```
 
 #Model Fit - NN (Early)
@@ -205,6 +218,7 @@ autoplot(early.ts) +
 
 # Model 3:  Neural Network 
 NN_scores <- accuracy(early.NN.for$mean,early.test.ts)
+#store performance metrics
 ```
 
 #Model Plotting (Early)
@@ -273,7 +287,8 @@ autoplot(late.ts)+
   autolayer(late.test.ts)+
   ylab("Total Funding")
 
-ARIMA_scores_late <- accuracy(late.arima.for$mean, late.test.ts)  #store the performance metrics
+ARIMA_scores_late <- accuracy(late.arima.for$mean, late.test.ts)  
+#store the performance metrics
 ```
 
 #Model Fit - Mean, Naive, SSES (Late)
@@ -289,6 +304,14 @@ snaive_scores_late <- accuracy(late.snaiveSeas$mean, late.test.ts)  #store the p
 #Model 4: SSES
 late.SSES <- es(late.training.ts, model="ZZZ", h=2, holdout=FALSE)
 SSES_scores_late <- accuracy(late.SSES$forecast,late.test.ts)
+
+#Plot model + observed data
+autoplot(late.ts) +
+  autolayer(late.meanSeas, series="Mean",PI=FALSE)+
+  autolayer(late.snaiveSeas, series="Naive",PI=FALSE)+
+  autolayer(late.SSES$forecast, series="SSES",PI=FALSE)+
+  autolayer(late.test.ts, series = "Test")+
+  ylab("Funding")
 ```
 #Model Fit - TBATS (Late)
 ```{r echo=FALSE}
