@@ -1,5 +1,5 @@
 ---
-title: "Startups Funding"
+title: "Clean Tech Startup Funding"
 author: "Michael Audie, Karen Thornton, Hannah Schofield"
 date: "2023-04-28"
 output:
@@ -123,7 +123,7 @@ autoplot(late.training.ts)
 autoplot(late.test.ts)
 ```
 
-#Visualization
+# Visualization
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align = 'center'}
 #plot early and late full datasets
 ggplot(early_stage_sum.df, aes(x=year))+
@@ -137,7 +137,7 @@ ggplot(early_stage_sum.df, aes(x=year))+
 
 As you can see, both early and late stage funding has increased drastically over the years. Late stage passed early stage around 2016 and has been greater than early stage ever since. 
 
-#Create ACFs and PACFs
+# Create ACFs and PACFs
 ```{r echo=FALSE, fig.align = 'center'}
 #create ACFs and PACFs for the full datasets
 par(mar=c(3,3,3,0));par(mfrow=c(1,2))
@@ -147,7 +147,7 @@ Acf(late.ts,lag.max = 40,main="Late ACF",ylim=c(-1,1))
 Pacf(late.ts,lag.max = 40,main="Late PACF",ylim=c(-1,1))
 ```
 
-#Model Fit - Arima (Early)
+# Model Fit - Arima (Early)
 ```{r echo=FALSE}
 #Fit the early data to an ARIMA
 #Model 1: ARIMA
@@ -166,7 +166,7 @@ ARIMA_scores <- accuracy(early.arima.for$mean, early.test.ts)
 #store the performance metrics
 ```
 
-#Model Fit - Mean, Naive, SSES (Early)
+# Model Fit - Mean, Naive, SSES (Early)
 ```{r echo=FALSE, message=FALSE, warning=FALSE,fig.align = 'center' }
 #Model 2: Arithmetic Mean 
 early.meanSeas <- meanf(y = early.training.ts, h = 6)
@@ -192,7 +192,7 @@ autoplot(early.ts) +
   ylab("Funding ($)")
 ```
 
-#Model Fit - TBATS (Early)
+# Model Fit - TBATS (Early)
 ```{r echo=FALSE, fig.align = 'center'}
 #Model 5: TBATS
 early.TBATS <-  tbats(early.training.ts)
@@ -212,7 +212,7 @@ TBATS_scores <- accuracy(early.TBATS.for$mean,early.test.ts)
 #store the performance metrics
 ```
 
-#Model Fit - NN (Early)
+# Model Fit - NN (Early)
 ```{r echo=FALSE, fig.align = 'center'}
 #Model 6: Neural Network
 early.NN.fit <- nnetar(early.training.ts,p=1,P=1)
@@ -234,7 +234,7 @@ NN_scores <- accuracy(early.NN.for$mean,early.test.ts)
 #store performance metrics
 ```
 
-#Model Plotting (Early)
+# Model Plotting (Early)
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align = 'center'}
 #Early models plotting
 autoplot(early.training.ts) +
@@ -250,7 +250,7 @@ autoplot(early.training.ts) +
 ```
 As you can tell from the graph, it is hard to see which model has the best fit for early stage investment. To better understand which model to use, we compared the RMSE scores. The model with the lowest RMSE score has the best fit. 
 
-#Model Scoring (Early)
+# Model Scoring (Early)
 ```{r echo=FALSE, fig.align = 'center'}
 #Early models comparison
 early.scores <- as.data.frame(
@@ -265,7 +265,7 @@ early.best_model_index <- which.min(early.scores[,"RMSE"])
 cat("The best model by RMSE is:", row.names(early.scores[early.best_model_index,]))  
 ```
 
-#RMSE - Early
+# RMSE - Early
 
 The below code is included in the kableExtra package. It runs in r markdown, but isn't compatible with knitting. We included it here to show our efforts. 
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
@@ -278,19 +278,7 @@ The below code is included in the kableExtra package. It runs in r markdown, but
   #kable_styling(latex_options="striped", stripe_index = which.min(early.scores[,"RMSE"]))
 ```
 
-
-#Model Fit - ES (Late)
-```{r echo=FALSE}
-late.ES<-es(late.training.ts,model = "ZZZ",h=1,houldout=FALSE)
-late.ES.forecast<-forecast(late.ES, h=2)
-
-plot(late.ES.forecast)
-autoplot(late.ts)+
-  autolayer(late.ES.forecast$mean, series = "ES")+
-  ylab("Funding ($)")
-```
-
-#Model Fit - Arima (Late)
+# Model Fit - Arima (Late)
 ```{r echo=FALSE}
 #Fit the late data to an ARIMA
 #Model 1: ARIMA
@@ -309,7 +297,7 @@ ARIMA_scores_late <- accuracy(late.arima.for$mean, late.test.ts)
 #store the performance metrics
 ```
 
-#Model Fit - Mean, Naive, SSES (Late)
+# Model Fit - Mean, Naive, SSES (Late)
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align = 'center'}
 #Model 2: Arithmetic Mean 
 late.meanSeas <- meanf(y = late.training.ts, h = 2)
@@ -332,7 +320,7 @@ autoplot(late.ts) +
   ylab("Funding ($)")
 ```
 
-#Model Fit - TBATS (Late)
+# Model Fit - TBATS (Late)
 ```{r echo=FALSE, fig.align = 'center'}
 #Model 5: TBATS
 late.TBATS <-  tbats(late.training.ts)
@@ -352,7 +340,7 @@ TBATS_scores_late <- accuracy(late.TBATS.for$mean,late.test.ts)
 #store scoring metrics
 ```
 
-#Model Fit - NN (Late)
+# Model Fit - NN (Late)
 ```{r echo=FALSE, fig.align = 'center'}
 #Model 6: Neural Network
 late.NN.fit <- nnetar(late.training.ts,p=1,P=1)
@@ -374,7 +362,7 @@ NN_scores_late <- accuracy(late.NN.for$mean,late.test.ts)
 #store scoring metrics
 ```
 
-#Model Plotting (Late)
+# Model Plotting (Late)
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align = 'center'}
 #Early models plotting
 autoplot(late.ts) +
@@ -389,7 +377,7 @@ autoplot(late.ts) +
 ```
 As you can tell from the graph, it is hard to see which model has the best fit for late stage investment. To better understand which model to use, we compared the RMSE scores. The model with the lowest RMSE score has the best fit.
 
-#Model Scoring (Late)
+# Model Scoring (Late)
 ```{r echo=FALSE}
 #Late models comparison
 late.scores <- as.data.frame(
@@ -404,7 +392,7 @@ late.best_model_index <- which.min(late.scores[,"RMSE"])
 cat("The best model by RMSE is:", row.names(late.scores[late.best_model_index,]))  
 ```
 
-#RMSE - Late
+# RMSE - Late
 
 The below code is included in the kableExtra package. It runs in r markdown, but isn't compatible with knitting. We included it here to show our efforts.
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
@@ -417,7 +405,7 @@ The below code is included in the kableExtra package. It runs in r markdown, but
   #kable_styling(latex_options="striped", stripe_index = which.min(late.scores[,"RMSE"]))
 ```
 
-#Plot the Best Model (Early)
+# Plot the Best Model (Early)
 ```{r echo=FALSE, fig.align = 'center'}
 #early
 autoplot(early.ts) +
@@ -428,7 +416,7 @@ autoplot(early.ts) +
   guides(colour=guide_legend(title="Forecast"))
 ```
 
-#Plot the Best Model (Late)
+# Plot the Best Model (Late)
 ```{r echo=FALSE, fig.align = 'center'}
 #late
 autoplot(late.ts) +
