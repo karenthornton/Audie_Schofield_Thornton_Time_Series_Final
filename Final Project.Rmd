@@ -11,11 +11,10 @@ editor_options:
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(error = TRUE, include = FALSE)
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(error = TRUE, echo = TRUE)
 ```
 
-```{r message=FALSE, warning=FALSE, include=FALSE}
+```{r load, error=TRUE, message=FALSE, warning=FALSE, include=FALSE}
 #load packages
 library(lubridate)
 library(ggplot2)
@@ -23,15 +22,16 @@ library(forecast)
 library(tseries)
 library(smooth)
 library(dplyr)
-library(kableExtra)
+#library(kableExtra)  #this is not knit friendly so we took it out
 ```
 **Background**
-  +Clean Tech startups are on the rise 
-  +There are two stages of funding stages: early stage and late stage. Early stage can be considered seed funding and late stage can be something like series C funding. Late stage funding is often more money for fewer companies
-  +Companies that make it to late stage funding have a higher chance of being sucessfull.
-  +Greater late stage funding investment suggests a more maturation of the Clean Tech industry. 
+  + Clean Tech startups are on the rise 
+  + There are two stages of funding stages: early stage and late stage. Early stage can be considered seed funding and late stage can be something like series C funding. Late stage funding is often more money for fewer companies
+  + Companies that make it to late stage funding have a higher chance of being sucessfull.
+  + Greater late stage funding investment suggests a more maturation of the Clean Tech industry. 
 
 **Research Questions**
+
 1. Are investments in clean tech startups expected to continue to increase?
 
 2. As the clean tech industry matures will investments in late-stage startups outpace investments in earlier-stage startups? 
@@ -87,7 +87,7 @@ late_stage_sum_training.df <- late_stage_sum.df %>%
 ```
 
 #Creating Time Series
-```{r fig.align=, include=FALSE}
+```{r include=FALSE}
 #create time series for full datasets
 early.ts<-ts(early_stage_sum.df[,2], start = c(2000,1), frequency = 1)
 late.ts<-ts(late_stage_sum.df[,2], start = c(2000,1), frequency = 1)
