@@ -1,7 +1,7 @@
 ---
 title: "Startups Funding"
 author: "Michael Audie, Karen Thornton, Hannah Schofield"
-date: "2023-04-01"
+date: "2023-04-28"
 output:
   pdf_document: default
   html_document: default
@@ -11,6 +11,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(error = TRUE)
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
