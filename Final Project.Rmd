@@ -9,9 +9,10 @@ editor_options:
   chunk_output_type: console
 ---
 
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE) 
-knitr::opts_chunk$set(error = TRUE)
+knitr::opts_chunk$set(error = TRUE, include = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
