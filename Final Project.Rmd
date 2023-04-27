@@ -10,9 +10,8 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE) 
 knitr::opts_chunk$set(error = TRUE)
-knitr::opts_chunk$set(echo = TRUE,tidy.opts=list(width.cutoff=80), tidy=FALSE) 
 ```
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
