@@ -25,10 +25,11 @@ library(dplyr)
 #library(kableExtra)  #this is not knit friendly so we took it out
 ```
 **Background**
-  * Clean Tech startups are on the rise 
-  * There are two stages of funding stages: early stage and late stage. Early stage can be considered seed funding and late stage can be something like series C funding. Late stage funding is often more money for fewer companies
-  * Companies that make it to late stage funding have a higher chance of being sucessfull.
-  * Greater late stage funding investment suggests a more maturation of the Clean Tech industry. 
+
+* Clean Tech startups are on the rise 
+* There are two stages of funding stages: early stage and late stage. Early stage can be considered seed funding and late stage can be something like series C funding. Late stage funding is often more money for fewer companies
+* Companies that make it to late stage funding have a higher chance of being sucessfull.
+* Greater late stage funding investment suggests a more maturation of the Clean Tech industry. 
 
 **Research Questions**
 
@@ -38,7 +39,7 @@ library(dplyr)
 
 **Data**
 
-The data was collected from the IEA. The data is broken up into early and late stage investments. The data original went to 2022, but with Covid, the War in Ukraine, and a recession, there were dips in investment in both stages. Since we believe this doesn't reflect the trend of the industry, we decided to remove the year 2022. 
+The data was collected from the IEA. The data is broken up into early and late stage investments. The data originally went to 2022, but with Covid, the War in Ukraine, and a recession, there were dips in investment in both stages. Since we believe this doesn't reflect the trend of the industry, we decided to remove the year 2022. 
 
 **Limitations**
 
@@ -123,7 +124,7 @@ autoplot(late.test.ts)
 ```
 
 #Visualization
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align = 'center'}
 #plot early and late full datasets
 ggplot(early_stage_sum.df, aes(x=year))+
   geom_line(aes(y=early.ts,colour="Early"))+
@@ -250,7 +251,7 @@ autoplot(early.training.ts) +
 As you can tell from the graph, it is hard to see which model has the best fit for early stage investment. To better understand which model to use, we compared the RMSE scores. The model with the lowest RMSE score has the best fit. 
 
 #Model Scoring (Early)
-```{r echo=FALSE}
+```{r echo=FALSE, fig.align = 'center'}
 #Early models comparison
 early.scores <- as.data.frame(
   rbind(ARIMA_scores, mean_scores, snaive_scores, SSES_scores, TBATS_scores, NN_scores)
@@ -285,7 +286,7 @@ late.ES.forecast<-forecast(late.ES, h=2)
 
 plot(late.ES.forecast)
 autoplot(late.ts)+
-  autolayer(late.ES.forecast$mean)+
+  autolayer(late.ES.forecast$mean, series = "ES")+
   ylab("Funding ($)")
 ```
 
