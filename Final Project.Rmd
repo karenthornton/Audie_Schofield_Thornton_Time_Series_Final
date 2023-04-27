@@ -45,6 +45,7 @@ The dataset had some limitations that made it harder to predict future years. Th
 2. As mentioned above, covid, and other factors like the war in Ukraine, and overall recession could be factors in the model that cannot be predicted or anticipated. 
 
 **Data Processing Steps**
+
 #Data Wrangling - Full sets
 ```{r echo=FALSE, warning=FALSE}
 #load the data
@@ -98,6 +99,7 @@ late.training.ts<-ts(late_stage_sum_training.df[,2], start = c(2000,1), frequenc
 ```
 
 #Data Wrangling - Testing Sets
+The below graphs show the testing sets and the training sets for early and late stage.
 ```{r echo=FALSE, fig.align = 'center'}
 #create an early stage testing df 2020-2021
 early_stage_sum_testing.df <- early_stage_sum.df %>%
@@ -193,7 +195,7 @@ early.TBATS <-  tbats(early.training.ts)
 early.TBATS.for <-  forecast(early.TBATS, h = 6)
 
 #Plot forcasting results
-autoplot(early.TBATS.for) + ylab("Funding")
+autoplot(early.TBATS.for) + ylab("Funding ($)")
 
 #Plot model + observed data
 autoplot(early.ts) +
@@ -229,7 +231,7 @@ NN_scores <- accuracy(early.NN.for$mean,early.test.ts)
 ```
 
 #Model Plotting (Early)
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align = 'center'}
 #Early models plotting
 autoplot(early.training.ts) +
   autolayer(early.arima.for, PI=FALSE, series="ARIMA") +
@@ -242,6 +244,7 @@ autoplot(early.training.ts) +
   xlab("Year") + ylab("Funding ($)") +
   guides(colour=guide_legend(title="Forecast"))
 ```
+As you can tell from the graph, it is hard to see which model has the best fit for early stage investment. To better understand which model to use, we compared the RMSE scores. The model with the lowest RMSE score has the best fit. 
 
 #Model Scoring (Early)
 ```{r echo=FALSE}
@@ -259,13 +262,15 @@ cat("The best model by RMSE is:", row.names(early.scores[early.best_model_index,
 ```
 
 #RMSE - Early
-```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align = 'center'}
-kbl(early.scores, 
-      caption = "Forecast Accuracy for Early Stage Funding Date",
-      digits = array(6,ncol(early.scores))) %>%
-  kable_styling(full_width = FALSE, position = "center") %>%
+The below code is included in the kableExtra package. It runs in r markdown, but isn't compatible with knitting. We included it here to show our efforts. 
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+#kbl(early.scores, 
+      #caption = "Forecast Accuracy for Early Stage Funding Date",
+      #digits = array(6,ncol(early.scores))) %>%
+  #kable_styling(full_width = FALSE, position = "center") %>%
+
   #highlight model with lowest RMSE
-  kable_styling(latex_options="striped", stripe_index = which.min(early.scores[,"RMSE"]))
+  #kable_styling(latex_options="striped", stripe_index = which.min(early.scores[,"RMSE"]))
 ```
 
 
@@ -276,7 +281,8 @@ late.ES.forecast<-forecast(late.ES, h=2)
 
 plot(late.ES.forecast)
 autoplot(late.ts)+
-  autolayer(late.ES.forecast$mean)
+  autolayer(late.ES.forecast$mean)+
+  ylab("Funding ($)")
 ```
 
 #Model Fit - Arima (Late)
@@ -290,8 +296,8 @@ late.arima.for<-forecast(late.arima, h=2)
 
 #Visualize Model
 autoplot(late.ts)+
-  autolayer(late.arima.for$mean)+
-  autolayer(late.test.ts)+
+  autolayer(late.arima.for, series = "ARIMA")+
+  autolayer(late.test.ts, series = "Test")+
   ylab("Funding ($)")
 
 ARIMA_scores_late <- accuracy(late.arima.for$mean, late.test.ts)  
@@ -342,7 +348,7 @@ TBATS_scores_late <- accuracy(late.TBATS.for$mean,late.test.ts)
 ```
 
 #Model Fit - NN (Late)
-```{r echo=FALSE}
+```{r echo=FALSE, fig.align = 'center'}
 #Model 6: Neural Network
 late.NN.fit <- nnetar(late.training.ts,p=1,P=1)
   #nnetar(early.training.ts,p=1,P=0,xreg=fourier(early.training.ts, K=c(2,12)))
@@ -364,7 +370,7 @@ NN_scores_late <- accuracy(late.NN.for$mean,late.test.ts)
 ```
 
 #Model Plotting (Late)
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align = 'center'}
 #Early models plotting
 autoplot(late.ts) +
   autolayer(late.arima.for, PI=FALSE, series="ARIMA") +
@@ -376,6 +382,7 @@ autoplot(late.ts) +
   xlab("Year") + ylab("Funding ($)") +
   guides(colour=guide_legend(title="Forecast"))
 ```
+As you can tell from the graph, it is hard to see which model has the best fit for late stage investment. To better understand which model to use, we compared the RMSE scores. The model with the lowest RMSE score has the best fit.
 
 #Model Scoring (Late)
 ```{r echo=FALSE}
@@ -393,17 +400,19 @@ cat("The best model by RMSE is:", row.names(late.scores[late.best_model_index,])
 ```
 
 #RMSE - Late
-```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align = 'center'}
-kbl(late.scores, 
-      caption = "Forecast Accuracy for Late Stage Funding Date",
-      digits = array(6,ncol(late.scores))) %>%
-  kable_styling(full_width = FALSE, position = "center") %>%
+The below code is included in the kableExtra package. It runs in r markdown, but isn't compatible with knitting. We included it here to show our efforts.
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+#kbl(late.scores, 
+      #caption = "Forecast Accuracy for Late Stage Funding Date",
+      #digits = array(6,ncol(late.scores))) %>%
+  #kable_styling(full_width = FALSE, position = "center") %>%
+
   #highlight model with lowest RMSE
-  kable_styling(latex_options="striped", stripe_index = which.min(late.scores[,"RMSE"]))
+  #kable_styling(latex_options="striped", stripe_index = which.min(late.scores[,"RMSE"]))
 ```
 
 #Plot the Best Model (Early)
-```{r echo=FALSE}
+```{r echo=FALSE, fig.align = 'center'}
 #early
 autoplot(early.ts) +
   autolayer(early.TBATS.for, series="TBATS",PI=FALSE)+
@@ -414,7 +423,7 @@ autoplot(early.ts) +
 ```
 
 #Plot the Best Model (Late)
-```{r echo=FALSE}
+```{r echo=FALSE, fig.align = 'center'}
 #late
 autoplot(late.ts) +
   autolayer(late.TBATS.for, PI=FALSE, series="TBATS")+
