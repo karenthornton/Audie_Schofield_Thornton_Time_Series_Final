@@ -12,9 +12,10 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(error = TRUE)
+knitr::opts_chunk$set(echo = TRUE,tidy.opts=list(width.cutoff=80), tidy=FALSE) 
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, include=FALSE}
 #load packages
 library(lubridate)
 library(ggplot2)
@@ -24,24 +25,26 @@ library(smooth)
 library(dplyr)
 library(kableExtra)
 ```
-#Background
--Clean Tech startups are on the rise 
--There are two stages of funding stages: early stage and late stage. Early stage can be considered seed funding and late stage can be something like series C funding. Late stage funding is often more money for fewer companies
--Companies that make it to late stage funding have a higher chance of being sucessfull.
--Greater late stage funding investment suggests a more maturation of the Clean Tech industry. 
+**Background**
+  +Clean Tech startups are on the rise 
+  +There are two stages of funding stages: early stage and late stage. Early stage can be considered seed funding and late stage can be something like series C funding. Late stage funding is often more money for fewer companies
+  +Companies that make it to late stage funding have a higher chance of being sucessfull.
+  +Greater late stage funding investment suggests a more maturation of the Clean Tech industry. 
 
-#Research Questions
+**Research Questions**
 1. Are investments in clean tech startups expected to continue to increase?
+
 2. As the clean tech industry matures will investments in late-stage startups outpace investments in earlier-stage startups? 
 
-#Data
+**Data**
 The data was collected from the IEA. The data is broken up into early and late stage investments. The data original went to 2022, but with Covid, the War in Ukraine, and a recession, there were dips in investment in both stages. Since we believe this doesn't reflect the trend of the industry, we decided to remove the year 2022. 
 
-#Limitations
+**Limitations**
 The dataset had some limitations that made it harder to predict future years. These limitations include, but are not limited to:
 1. The data was yearly, as opposed to daily or monthly. This made it difficult to show seasonality. It also made the data less granular and will less data points it was harder to see a trend to model. 
 2. As mentioned above, covid, and other factors like the war in Ukraine, and overall recession could be factors in the model that cannot be predicted or anticipated. 
 
+**Data Processing Steps**
 #Data Wrangling - Full sets
 ```{r echo=FALSE, warning=FALSE}
 #load the data
@@ -84,7 +87,7 @@ late_stage_sum_training.df <- late_stage_sum.df %>%
 ```
 
 #Creating Time Series
-```{r echo=FALSE}
+```{r fig.align=, include=FALSE}
 #create time series for full datasets
 early.ts<-ts(early_stage_sum.df[,2], start = c(2000,1), frequency = 1)
 late.ts<-ts(late_stage_sum.df[,2], start = c(2000,1), frequency = 1)
@@ -95,7 +98,7 @@ late.training.ts<-ts(late_stage_sum_training.df[,2], start = c(2000,1), frequenc
 ```
 
 #Data Wrangling - Testing Sets
-```{r echo=FALSE}
+```{r echo=FALSE, fig.align = 'center'}
 #create an early stage testing df 2020-2021
 early_stage_sum_testing.df <- early_stage_sum.df %>%
   filter(between(year, as.Date("2020-01-01"), as.Date("2021-01-01")))
@@ -115,7 +118,7 @@ autoplot(late.test.ts)
 ```
 
 #Visualization
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 #plot early and late full datasets
 ggplot(early_stage_sum.df, aes(x=year))+
   geom_line(aes(y=early.ts,colour="Early"))+
@@ -129,7 +132,7 @@ ggplot(early_stage_sum.df, aes(x=year))+
 As you can see, both early and late stage funding has increased drastically over the years. Late stage passed early stage around 2016 and has been greater than early stage ever since. 
 
 #Create ACFs and PACFs
-```{r echo=FALSE}
+```{r echo=FALSE, fig.align = 'center'}
 #create ACFs and PACFs for the full datasets
 par(mar=c(3,3,3,0));par(mfrow=c(1,2))
 Acf(early.ts,lag.max = 40,main="Early ACF",ylim=c(-1,1))
@@ -150,14 +153,15 @@ early.arima.for<-forecast(early.arima, h=6)
 #Visualize Model
 autoplot(early.training.ts)+
   autolayer(early.arima.for, series = "ARIMA")+
-  autolayer(early.test.ts, series = "Test")
+  autolayer(early.test.ts, series = "Test")+
+  ylab("Funding ($)")
 
 ARIMA_scores <- accuracy(early.arima.for$mean, early.test.ts)
 #store the performance metrics
 ```
 
 #Model Fit - Mean, Naive, SSES (Early)
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE,fig.align = 'center' }
 #Model 2: Arithmetic Mean 
 early.meanSeas <- meanf(y = early.training.ts, h = 6)
 mean_scores <- accuracy(early.meanSeas$mean, early.test.ts)  
@@ -179,11 +183,11 @@ autoplot(early.ts) +
   autolayer(early.snaiveSeas, series="Naive",PI=FALSE)+
   autolayer(early.SSES$forecast, series="SSES",PI=FALSE)+
   autolayer(early.test.ts, series = "Test")+
-  ylab("Funding")
+  ylab("Funding ($)")
 ```
 
 #Model Fit - TBATS (Early)
-```{r echo=FALSE}
+```{r echo=FALSE, fig.align = 'center'}
 #Model 5: TBATS
 early.TBATS <-  tbats(early.training.ts)
 early.TBATS.for <-  forecast(early.TBATS, h = 6)
@@ -195,7 +199,7 @@ autoplot(early.TBATS.for) + ylab("Funding")
 autoplot(early.ts) +
   autolayer(early.TBATS.for, series="TBATS",PI=FALSE) +
   autolayer(early.test.ts, series = "Test")+
-  ylab("Funding")
+  ylab("Funding ($)")
 
 #model scoring
 TBATS_scores <- accuracy(early.TBATS.for$mean,early.test.ts)
@@ -203,7 +207,7 @@ TBATS_scores <- accuracy(early.TBATS.for$mean,early.test.ts)
 ```
 
 #Model Fit - NN (Early)
-```{r echo=FALSE}
+```{r echo=FALSE, fig.align = 'center'}
 #Model 6: Neural Network
 early.NN.fit <- nnetar(early.training.ts,p=1,P=1)
   #nnetar(early.training.ts,p=1,P=0,xreg=fourier(early.training.ts, K=c(2,12)))
@@ -211,13 +215,13 @@ early.NN.fit <- nnetar(early.training.ts,p=1,P=1)
 early.NN.for <- forecast(early.NN.fit, h=6)
 
 #Plot forecasting results
-autoplot(early.NN.for) + ylab("Funding")
+autoplot(early.NN.for) + ylab("Funding ($)")
 
 #Plot model + observed data
 autoplot(early.ts) +
   autolayer(early.NN.for, series="Neural Network",PI=FALSE)+
   autolayer(early.test.ts, series = "Test")+
-  ylab("Funding")
+  ylab("Funding ($)")
 
 # Model 3:  Neural Network 
 NN_scores <- accuracy(early.NN.for$mean,early.test.ts)
@@ -225,7 +229,7 @@ NN_scores <- accuracy(early.NN.for$mean,early.test.ts)
 ```
 
 #Model Plotting (Early)
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 #Early models plotting
 autoplot(early.training.ts) +
   autolayer(early.arima.for, PI=FALSE, series="ARIMA") +
@@ -255,7 +259,7 @@ cat("The best model by RMSE is:", row.names(early.scores[early.best_model_index,
 ```
 
 #RMSE - Early
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align = 'center'}
 kbl(early.scores, 
       caption = "Forecast Accuracy for Early Stage Funding Date",
       digits = array(6,ncol(early.scores))) %>%
@@ -288,14 +292,14 @@ late.arima.for<-forecast(late.arima, h=2)
 autoplot(late.ts)+
   autolayer(late.arima.for$mean)+
   autolayer(late.test.ts)+
-  ylab("Total Funding")
+  ylab("Funding ($)")
 
 ARIMA_scores_late <- accuracy(late.arima.for$mean, late.test.ts)  
 #store the performance metrics
 ```
 
 #Model Fit - Mean, Naive, SSES (Late)
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align = 'center'}
 #Model 2: Arithmetic Mean 
 late.meanSeas <- meanf(y = late.training.ts, h = 2)
 mean_scores_late <- accuracy(late.meanSeas$mean, late.test.ts)  #store the performance metrics
@@ -314,23 +318,23 @@ autoplot(late.ts) +
   autolayer(late.snaiveSeas, series="Naive",PI=FALSE)+
   autolayer(late.SSES$forecast, series="SSES",PI=FALSE)+
   autolayer(late.test.ts, series = "Test")+
-  ylab("Funding")
+  ylab("Funding ($)")
 ```
 
 #Model Fit - TBATS (Late)
-```{r echo=FALSE}
+```{r echo=FALSE, fig.align = 'center'}
 #Model 5: TBATS
 late.TBATS <-  tbats(late.training.ts)
 late.TBATS.for <-  forecast(late.TBATS, h = 2)
 
 #Plot forcasting results
-autoplot(late.TBATS.for) + ylab("Funding")
+autoplot(late.TBATS.for) + ylab("Funding ($)")
 
 #Plot model + observed data
 autoplot(late.ts) +
   autolayer(late.TBATS.for, series="TBATS",PI=FALSE) +
   autolayer(late.test.ts, series = "Test")+
-  ylab("Funding")
+  ylab("Funding ($)")
 
 #model scoring
 TBATS_scores_late <- accuracy(late.TBATS.for$mean,late.test.ts)
@@ -346,13 +350,13 @@ late.NN.fit <- nnetar(late.training.ts,p=1,P=1)
 late.NN.for <- forecast(late.NN.fit, h=2)
 
 #Plot forecasting results
-autoplot(late.NN.for) + ylab("Funding")
+autoplot(late.NN.for) + ylab("Funding ($)")
 
 #Plot model + observed data
 autoplot(late.ts) +
   autolayer(late.NN.for, series="Neural Network",PI=FALSE)+
   autolayer(late.test.ts, series = "Test")+
-  ylab("Funding")
+  ylab("Funding ($)")
 
 # Model 3:  Neural Network 
 NN_scores_late <- accuracy(late.NN.for$mean,late.test.ts)
@@ -360,7 +364,7 @@ NN_scores_late <- accuracy(late.NN.for$mean,late.test.ts)
 ```
 
 #Model Plotting (Late)
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 #Early models plotting
 autoplot(late.ts) +
   autolayer(late.arima.for, PI=FALSE, series="ARIMA") +
@@ -389,7 +393,7 @@ cat("The best model by RMSE is:", row.names(late.scores[late.best_model_index,])
 ```
 
 #RMSE - Late
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align = 'center'}
 kbl(late.scores, 
       caption = "Forecast Accuracy for Late Stage Funding Date",
       digits = array(6,ncol(late.scores))) %>%
@@ -398,7 +402,7 @@ kbl(late.scores,
   kable_styling(latex_options="striped", stripe_index = which.min(late.scores[,"RMSE"]))
 ```
 
-#Plot the Best Models
+#Plot the Best Model (Early)
 ```{r echo=FALSE}
 #early
 autoplot(early.ts) +
@@ -407,7 +411,10 @@ autoplot(early.ts) +
   xlab("Year") + 
   ylab("Funding ($)") +
   guides(colour=guide_legend(title="Forecast"))
+```
 
+#Plot the Best Model (Late)
+```{r echo=FALSE}
 #late
 autoplot(late.ts) +
   autolayer(late.TBATS.for, PI=FALSE, series="TBATS")+
@@ -417,8 +424,8 @@ autoplot(late.ts) +
   guides(colour=guide_legend(title="Forecast"))
 ```
 
-#Conclusions
+**Conclusions**
 There are some limitations to this dataset which have made it difficult to predict. These limitations made predictions difficult. It is unclear whether there will continue to be an increase in clean tech startup investment in the future. Looking at the "best" model, the forecast for early stage investment seems to stay constant (a straight line), where late stage investment has an increase.This shows that, with the limited data available, there will be an overall increase in clean tech investment and the late stage investment will continue to be greater than early stage investment. 
 
-#Possible Future Steps
+**Possible Future Steps**
 Analyze the breakdown of early vs. late-stage investment by sector (energy, non-energy, grid, fossil fuel, energy efficiency, etc.)
